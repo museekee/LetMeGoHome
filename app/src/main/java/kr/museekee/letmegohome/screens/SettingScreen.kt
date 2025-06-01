@@ -1,14 +1,16 @@
 package kr.museekee.letmegohome.screens
 
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,6 +30,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kr.museekee.letmegohome.R
+import kr.museekee.letmegohome.components.IconLabel
+import kr.museekee.letmegohome.components.MiniWarp
 import kr.museekee.letmegohome.components.NumberSelection
 import kr.museekee.letmegohome.utils.PreferencesHelper
 import kr.museekee.letmegohome.utils.PrefsKeys
@@ -35,12 +40,14 @@ import kr.museekee.letmegohome.utils.PrefsKeys
 fun SettingScreen(navController: NavController) {
     val context = LocalContext.current
     val prefsHelper = remember { PreferencesHelper(context) }
+    var day by remember { mutableStateOf("") }
     var h1 by remember { mutableIntStateOf(0) }
     var h2 by remember { mutableIntStateOf(0) }
     var m1 by remember { mutableIntStateOf(0) }
     var m2 by remember { mutableIntStateOf(0) }
 
     var currentIndex by remember { mutableIntStateOf(0) }
+    var firstLoaded by remember { mutableStateOf(false) }
 
     data class GoHomeType(
         val id: String,
@@ -60,19 +67,34 @@ fun SettingScreen(navController: NavController) {
             label = "토귀",
             image = R.drawable.togwi,
             pref = PrefsKeys.TOGWI_TIME
-        )
+        ),
+//        GoHomeType(
+//            id = "jalyu",
+//            label = "잔류",
+//            image = R.drawable.jalyu,
+//            pref = PrefsKeys.JALYU_TIME
+//        )
     )
 
     LaunchedEffect(Unit, currentIndex) {
-        val (_, hh, mm) = prefsHelper.getString(types[currentIndex].pref).split(" ")
+        val (_day, hh, mm) = prefsHelper.getString(types[currentIndex].pref).split(" ")
         val (h1d, h2d) = hh.padStart(2, '0').chunked(1)
         val (m1d, m2d) = mm.padStart(2, '0').chunked(1)
 
+        day = _day
         h1 = h1d.toInt()
         h2 = h2d.toInt()
         m1 = m1d.toInt()
         m2 = m2d.toInt()
-        Log.d("Settings", "$h1 $h2 $m1 $m2")
+        firstLoaded = true
+    }
+    LaunchedEffect(h1, h2, m1, m2) {
+        prefsHelper.saveString(types[currentIndex].pref, "$day $h1$h2 $m1$m2")
+    }
+    BackHandler {
+        navController.navigate("select") {
+            popUpTo(0)
+        }
     }
 
     Column(
@@ -112,37 +134,73 @@ fun SettingScreen(navController: NavController) {
         )
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .weight(1f),
             horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NumberSelection(
-                onChange ={
-                    h1 = it
-                },
-                default = h1,
-                max = 2
-            )
-            NumberSelection(
-                onChange ={
-                    h2 = it
-                },
-                default = h2,
-                max = if (h1 == 2) 4 else 9
-            )
-            NumberSelection(
-                onChange ={
-                    m1 = it
-                },
-                default = m1,
-                max = 5
-            )
-            NumberSelection(
-                onChange ={
-                    m2 = it
-                },
-                default = m2,
-                max = 9
+            if (firstLoaded) {
+                NumberSelection(
+                    onChange ={
+                        h1 = it
+                    },
+                    default = h1,
+                    max = 2
+                )
+                NumberSelection(
+                    onChange ={
+                        h2 = it
+                    },
+                    default = h2,
+                    max = if (h1 == 2) 3 else 9
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .wrapContentHeight(align = Alignment.CenterVertically),
+                    text = ":",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                NumberSelection(
+                    onChange ={
+                        m1 = it
+                    },
+                    default = m1,
+                    max = 5
+                )
+                NumberSelection(
+                    onChange ={
+                        m2 = it
+                    },
+                    default = m2,
+                    max = 9
+                )
+            }
+        }
+        MiniWarp(
+            onClick = {
+                prefsHelper.resetToDefaults()
+                navController.popBackStack(navController.graph.startDestinationId, inclusive = true)
+                navController.navigate("setting") {
+                    launchSingleTop = true
+                }
+            },
+            text = "모든 설정 초기화"
+        )
+        Box (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            IconLabel(
+                icon = painterResource(R.drawable.logo),
+                label = "나가기 (자동저장)",
+                onClick = {
+                    navController.navigate("select") {
+                        popUpTo(0)
+                    }
+                }
             )
         }
     }

@@ -7,5 +7,5 @@ object PrefsDefaults {
     const val DEFAULT_GEUMGWI_TIME = "Friday 16 00"
     const val DEFAULT_TOGWI_TIME = "Saturday 08 30"
     const val DEFAULT_JALYU_TIME = "Sunday 18 00"
-    const val DEFAULT_WEEK = ""
+    const val DEFAULT_WEEK = -1
 }

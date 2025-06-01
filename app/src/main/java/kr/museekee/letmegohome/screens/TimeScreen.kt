@@ -1,7 +1,7 @@
 package kr.museekee.letmegohome.screens
 
-import android.util.Log
-import androidx.compose.foundation.clickable
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,24 +12,27 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import kr.museekee.letmegohome.R
+import kr.museekee.letmegohome.components.MiniWarp
 import kr.museekee.letmegohome.components.TimeComponent
 import kr.museekee.letmegohome.utils.PreferencesHelper
 import kr.museekee.letmegohome.utils.PrefsKeys
 import kr.museekee.letmegohome.utils.calculateTimeRemaining
 import kr.museekee.letmegohome.utils.toRealDate
-import androidx.compose.runtime.*
-import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 
 @Composable
@@ -47,6 +50,9 @@ fun TimeScreen(navController: NavController) {
             delay(1000L)
         }
     }
+    BackHandler {
+        (context as Activity).finish()
+    }
 
     val pType = prefsHelper.getString(PrefsKeys.GO_HOME_TYPE)
 
@@ -55,7 +61,9 @@ fun TimeScreen(navController: NavController) {
         "togwi" -> prefsHelper.getString(PrefsKeys.TOGWI_TIME)
         "jalyu" -> prefsHelper.getString(PrefsKeys.JALYU_TIME)
         else -> {
-            navController.navigate("select")
+            navController.navigate("select") {
+                popUpTo(0)
+            }
             "Monday 00 00"
         }
     }.split(" ")
@@ -70,6 +78,9 @@ fun TimeScreen(navController: NavController) {
 
     // 남은 시간 계산: currentTime 사용
     val remain = calculateTimeRemaining(currentTime, destDate)
+    val oneDayLeft = remain.days == 0
+    val twoHourLeft = oneDayLeft && remain.hours < 2
+    val color = if (twoHourLeft) Color(0xFFFF3F3F) else if (oneDayLeft) Color(0xFFFFCC00) else Color(0xFFFFFFFF)
 
     Column(
         modifier = Modifier
@@ -90,36 +101,31 @@ fun TimeScreen(navController: NavController) {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
         ) {
-            if (pType != "jalyu") {
-                TimeComponent(remain.days, "일")
-                TimeComponent(remain.hours, "시간")
-                TimeComponent(remain.minutes, "분")
-                TimeComponent(remain.seconds, "초")
+            if (pType != "jalyu")
+            {
+                TimeComponent(remain.days, "일", color)
+                TimeComponent(remain.hours, "시간", color)
+                TimeComponent(remain.minutes, "분", color)
+                TimeComponent(remain.seconds, "초", color)
             } else {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
                         .wrapContentHeight(align = Alignment.CenterVertically),
-                    text = "잔류",
+                    text = "-잔류-",
                     style = MaterialTheme.typography.titleLarge,
                     fontSize = 128.sp
                 )
             }
         }
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .padding(end = 30.dp)
-                .wrapContentHeight(align = Alignment.CenterVertically)
-                .clickable {
-                    navController.navigate("select")
-                },
-            textAlign = TextAlign.End,
-            text = "다시 설정 하기...",
-            color = Color(0xFF888888),
-            style = MaterialTheme.typography.bodySmall,
+        MiniWarp(
+            onClick = {
+                navController.navigate("select") {
+                    popUpTo(0)
+                }
+            },
+            text = "다시 설정 하기..."
         )
         Text(
             modifier = Modifier

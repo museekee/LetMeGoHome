@@ -1,5 +1,7 @@
 package kr.museekee.letmegohome.screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kr.museekee.letmegohome.R
+import kr.museekee.letmegohome.components.MiniWarp
 import kr.museekee.letmegohome.ui.theme.Moris9
 import kr.museekee.letmegohome.utils.PreferencesHelper
 import kr.museekee.letmegohome.utils.PrefsKeys
@@ -35,6 +38,10 @@ import java.time.temporal.IsoFields
 fun SelectScreen(navController: NavController) {
     val context = LocalContext.current
     val prefsHelper = remember { PreferencesHelper(context) }
+
+    BackHandler {
+        (context as Activity).finish()
+    }
 
     Column(
         modifier = Modifier
@@ -92,19 +99,11 @@ fun SelectScreen(navController: NavController) {
                 )
             }
         }
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .padding(end = 30.dp)
-                .wrapContentHeight(align = Alignment.CenterVertically)
-                .clickable {
-                    navController.navigate("setting")
-                },
-            textAlign = TextAlign.End,
-            text = "시간 설정 하기...",
-            color = Color(0xFF888888),
-            style = MaterialTheme.typography.bodySmall,
+        MiniWarp(
+            onClick = {
+                navController.navigate("setting")
+            },
+            text = "시간 설정 하기..."
         )
         Text(
             modifier = Modifier

@@ -1,5 +1,6 @@
 package kr.museekee.letmegohome.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -18,7 +19,8 @@ fun NumberSelection(onChange: (num: Int) -> Unit, default: Int, max: Int) {
 
     LaunchedEffect(default) {
         currentNumber = default
-        onChange(currentNumber)
+        Log.d("NSD", default.toString())
+//        onChange(currentNumber)
     }
     LaunchedEffect(currentNumber, max) {
         if (currentNumber > max)

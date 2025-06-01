@@ -34,7 +34,7 @@ class PreferencesHelper(context: Context) {
             putString(PrefsKeys.GEUMGWI_TIME, PrefsDefaults.DEFAULT_GEUMGWI_TIME)
             putString(PrefsKeys.TOGWI_TIME, PrefsDefaults.DEFAULT_TOGWI_TIME)
             putString(PrefsKeys.JALYU_TIME, PrefsDefaults.DEFAULT_JALYU_TIME)
-            putString(PrefsKeys.WEEK, PrefsDefaults.DEFAULT_WEEK)
+            putInt(PrefsKeys.WEEK, PrefsDefaults.DEFAULT_WEEK)
         }
     }
 }
