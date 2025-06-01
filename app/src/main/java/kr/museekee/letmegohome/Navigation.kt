@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kr.museekee.letmegohome.screens.SelectScreen
+import kr.museekee.letmegohome.screens.SettingScreen
 import kr.museekee.letmegohome.screens.TimeScreen
 import kr.museekee.letmegohome.utils.PreferencesHelper
 import kr.museekee.letmegohome.utils.PrefsKeys
@@ -27,6 +28,9 @@ fun Navigation() {
         }
         composable("time") {
             TimeScreen(navController = navController)
+        }
+        composable("setting") {
+            SettingScreen(navController = navController)
         }
     }
 }
