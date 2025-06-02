@@ -4,4 +4,5 @@
     android:minHeight="110dp"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
+    android:updatePeriodMillis="10000"
     android:widgetCategory="home_screen" />

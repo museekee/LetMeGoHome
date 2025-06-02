@@ -56,17 +56,7 @@ fun TimeScreen(navController: NavController) {
 
     val pType = prefsHelper.getString(PrefsKeys.GO_HOME_TYPE)
 
-    val (day, hh, mm) = when (pType) {
-        "geumgwi" -> prefsHelper.getString(PrefsKeys.GEUMGWI_TIME)
-        "togwi" -> prefsHelper.getString(PrefsKeys.TOGWI_TIME)
-        "jalyu" -> prefsHelper.getString(PrefsKeys.JALYU_TIME)
-        else -> {
-            navController.navigate("select") {
-                popUpTo(0)
-            }
-            "Monday 00 00"
-        }
-    }.split(" ")
+    val (day, hh, mm) = prefsHelper.getString(pType).split(" ")
 
     val pWeek = prefsHelper.getInt(PrefsKeys.WEEK)
     val destDate = toRealDate(
@@ -101,7 +91,7 @@ fun TimeScreen(navController: NavController) {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
         ) {
-            if (pType != "jalyu")
+            if (pType != PrefsKeys.JALYU_TIME)
             {
                 TimeComponent(remain.days, "일", color)
                 TimeComponent(remain.hours, "시간", color)

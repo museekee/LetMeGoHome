@@ -52,32 +52,28 @@ fun SettingScreen(navController: NavController) {
     data class GoHomeType(
         val id: String,
         val label: String,
-        val image: Int,
-        val pref: String
+        val image: Int
     )
     val types = listOf(
         GoHomeType(
-            id = "geumgwi",
+            id = PrefsKeys.GEUMGWI_TIME,
             label = "금귀",
-            image = R.drawable.geumgwi,
-            pref = PrefsKeys.GEUMGWI_TIME
+            image = R.drawable.geumgwi
         ),
         GoHomeType(
-            id = "togwi",
+            id = PrefsKeys.TOGWI_TIME,
             label = "토귀",
-            image = R.drawable.togwi,
-            pref = PrefsKeys.TOGWI_TIME
+            image = R.drawable.togwi
         ),
 //        GoHomeType(
-//            id = "jalyu",
+//            id = PrefsKeys.JALYU_TIME,
 //            label = "잔류",
-//            image = R.drawable.jalyu,
-//            pref = PrefsKeys.JALYU_TIME
+//            image = R.drawable.jalyu
 //        )
     )
 
     LaunchedEffect(Unit, currentIndex) {
-        val (_day, hh, mm) = prefsHelper.getString(types[currentIndex].pref).split(" ")
+        val (_day, hh, mm) = prefsHelper.getString(types[currentIndex].id).split(" ")
         val (h1d, h2d) = hh.padStart(2, '0').chunked(1)
         val (m1d, m2d) = mm.padStart(2, '0').chunked(1)
 
@@ -89,7 +85,7 @@ fun SettingScreen(navController: NavController) {
         firstLoaded = true
     }
     LaunchedEffect(h1, h2, m1, m2) {
-        prefsHelper.saveString(types[currentIndex].pref, "$day $h1$h2 $m1$m2")
+        prefsHelper.saveString(types[currentIndex].id, "$day $h1$h2 $m1$m2")
     }
     BackHandler {
         navController.navigate("select") {

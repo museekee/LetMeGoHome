@@ -69,17 +69,17 @@ fun SelectScreen(navController: NavController) {
             )
             val types = listOf(
                 GoHomeType(
-                    id = "geumgwi",
+                    id = PrefsKeys.GEUMGWI_TIME,
                     label = "금귀",
                     image = R.drawable.geumgwi
                 ),
                 GoHomeType(
-                    id = "togwi",
+                    id = PrefsKeys.TOGWI_TIME,
                     label = "토귀",
                     image = R.drawable.togwi
                 ),
                 GoHomeType(
-                    id = "jalyu",
+                    id = PrefsKeys.JALYU_TIME,
                     label = "잔류",
                     image = R.drawable.jalyu
                 )
